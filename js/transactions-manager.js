@@ -7,7 +7,9 @@
 class TransactionManager {
     constructor() {
         this.storageKey = 'ecofin_transactions';
+        this.categoriesKey = 'ecofin_categories';
         this.transactions = this.loadTransactions();
+        this.customCategories = this.loadCustomCategories();
     }
 
     loadTransactions() {
@@ -17,6 +19,18 @@ class TransactionManager {
 
     saveTransactions() {
         localStorage.setItem(this.storageKey, JSON.stringify(this.transactions));
+    }
+
+    loadCustomCategories() {
+        const stored = localStorage.getItem(this.categoriesKey);
+        return stored ? JSON.parse(stored) : {
+            income: [],
+            expense: []
+        };
+    }
+
+    saveCustomCategories() {
+        localStorage.setItem(this.categoriesKey, JSON.stringify(this.customCategories));
     }
 
     addTransaction(transaction) {
@@ -123,6 +137,81 @@ class TransactionManager {
         this.transactions = [];
         this.saveTransactions();
     }
+
+    // Métodos para gerenciar categorias personalizadas
+    addCustomCategory(type, categoryKey, categoryName) {
+        if (!['income', 'expense'].includes(type)) {
+            throw new Error('Tipo deve ser "income" ou "expense"');
+        }
+
+        // Verificar se a categoria já existe
+        const existingCategory = this.customCategories[type].find(cat => cat.key === categoryKey);
+        if (existingCategory) {
+            throw new Error('Categoria já existe');
+        }
+
+        this.customCategories[type].push({
+            key: categoryKey,
+            name: categoryName,
+            createdAt: new Date().toISOString()
+        });
+
+        this.saveCustomCategories();
+        return { key: categoryKey, name: categoryName };
+    }
+
+    removeCustomCategory(type, categoryKey) {
+        if (!['income', 'expense'].includes(type)) {
+            throw new Error('Tipo deve ser "income" ou "expense"');
+        }
+
+        this.customCategories[type] = this.customCategories[type].filter(cat => cat.key !== categoryKey);
+        this.saveCustomCategories();
+    }
+
+    getCustomCategories(type) {
+        if (type) {
+            return this.customCategories[type] || [];
+        }
+        return this.customCategories;
+    }
+
+    getAllCategories(type) {
+        const defaultCategories = this.getDefaultCategories(type);
+        const customCategories = this.getCustomCategories(type);
+        
+        return {
+            default: defaultCategories,
+            custom: customCategories,
+            all: [...defaultCategories, ...customCategories]
+        };
+    }
+
+    getDefaultCategories(type) {
+        const incomeCategories = [
+            { key: 'salario', name: 'Salário' },
+            { key: 'freelance', name: 'Freelance' },
+            { key: 'investimentos', name: 'Investimentos' },
+            { key: 'vendas', name: 'Vendas' },
+            { key: 'bonus', name: 'Bônus' }
+        ];
+
+        const expenseCategories = [
+            { key: 'alimentacao', name: 'Alimentação' },
+            { key: 'transporte', name: 'Transporte' },
+            { key: 'moradia', name: 'Moradia' },
+            { key: 'saude', name: 'Saúde' },
+            { key: 'educacao', name: 'Educação' },
+            { key: 'lazer', name: 'Lazer' },
+            { key: 'roupas', name: 'Roupas' },
+            { key: 'servicos', name: 'Serviços' },
+            { key: 'outros', name: 'Outros' }
+        ];
+
+        if (type === 'income') return incomeCategories;
+        if (type === 'expense') return expenseCategories;
+        return { income: incomeCategories, expense: expenseCategories };
+    }
 }
 
 // Classe para gerenciar os modais de transações
@@ -137,6 +226,9 @@ class TransactionModal {
         this.setDefaultDates();
         this.updateDashboard();
         this.loadRecentTransactions();
+        
+        // Inicializar categorias nos selects
+        this.updateCategorySelects();
     }
 
     bindEvents() {
@@ -158,10 +250,30 @@ class TransactionModal {
         const cancelIncomeBtn = document.getElementById('cancel-income');
         const cancelExpenseBtn = document.getElementById('cancel-expense');
         
+        // Event listeners para gerenciamento de categorias
+        const manageIncomeCategoriesBtn = document.getElementById('manage-income-categories');
+        const manageExpenseCategoriesBtn = document.getElementById('manage-expense-categories');
+        const closeCategoriesModal = document.getElementById('close-categories-modal');
+        const closeCategoriesModalBtn = document.getElementById('close-categories-modal-btn');
+        const incomeCategoriesTab = document.getElementById('income-categories-tab');
+        const expenseCategoriesTab = document.getElementById('expense-categories-tab');
+        const addIncomeCategoryBtn = document.getElementById('add-income-category');
+        const addExpenseCategoryBtn = document.getElementById('add-expense-category');
+        
         if (closeIncomeBtn) closeIncomeBtn.addEventListener('click', () => this.closeIncomeModal());
         if (closeExpenseBtn) closeExpenseBtn.addEventListener('click', () => this.closeExpenseModal());
         if (cancelIncomeBtn) cancelIncomeBtn.addEventListener('click', () => this.closeIncomeModal());
         if (cancelExpenseBtn) cancelExpenseBtn.addEventListener('click', () => this.closeExpenseModal());
+        
+        // Event listeners para gerenciamento de categorias
+        if (manageIncomeCategoriesBtn) manageIncomeCategoriesBtn.addEventListener('click', () => this.openCategoriesModal('income'));
+        if (manageExpenseCategoriesBtn) manageExpenseCategoriesBtn.addEventListener('click', () => this.openCategoriesModal('expense'));
+        if (closeCategoriesModal) closeCategoriesModal.addEventListener('click', () => this.closeCategoriesModal());
+        if (closeCategoriesModalBtn) closeCategoriesModalBtn.addEventListener('click', () => this.closeCategoriesModal());
+        if (incomeCategoriesTab) incomeCategoriesTab.addEventListener('click', () => this.switchCategoriesTab('income'));
+        if (expenseCategoriesTab) expenseCategoriesTab.addEventListener('click', () => this.switchCategoriesTab('expense'));
+        if (addIncomeCategoryBtn) addIncomeCategoryBtn.addEventListener('click', () => this.addNewCategory('income'));
+        if (addExpenseCategoryBtn) addExpenseCategoryBtn.addEventListener('click', () => this.addNewCategory('expense'));
 
         // Formulários
         const incomeForm = document.getElementById('income-form');
@@ -188,6 +300,9 @@ class TransactionModal {
             }
             if (e.target.id === 'expense-modal') {
                 this.closeExpenseModal();
+            }
+            if (e.target.id === 'categories-modal') {
+                this.closeCategoriesModal();
             }
         });
     }
@@ -414,25 +529,183 @@ class TransactionModal {
     }
 
     getCategoryName(category) {
-        const categories = {
-            // Receitas
-            'salario': 'Salário',
-            'freelance': 'Freelance',
-            'investimentos': 'Investimentos',
-            'vendas': 'Vendas',
-            'bonus': 'Bônus',
-            // Despesas
-            'alimentacao': 'Alimentação',
-            'transporte': 'Transporte',
-            'moradia': 'Moradia',
-            'saude': 'Saúde',
-            'educacao': 'Educação',
-            'lazer': 'Lazer',
-            'roupas': 'Roupas',
-            'servicos': 'Serviços',
-            'outros': 'Outros'
-        };
-        return categories[category] || category;
+        // Buscar nas categorias padrão
+        const allDefaultCategories = this.getDefaultCategories();
+        const allCategories = [...allDefaultCategories.income, ...allDefaultCategories.expense];
+        
+        const defaultCategory = allCategories.find(cat => cat.key === category);
+        if (defaultCategory) {
+            return defaultCategory.name;
+        }
+        
+        // Buscar nas categorias personalizadas
+        const allCustomCategories = [...this.customCategories.income, ...this.customCategories.expense];
+        const customCategory = allCustomCategories.find(cat => cat.key === category);
+        if (customCategory) {
+            return customCategory.name;
+        }
+        
+        // Retornar a categoria original se não encontrar
+        return category;
+    }
+
+    // Métodos para gerenciar modal de categorias
+    openCategoriesModal(activeTab = 'income') {
+        const modal = document.getElementById('categories-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            this.switchCategoriesTab(activeTab);
+            this.loadCategoriesInModal();
+        }
+    }
+
+    closeCategoriesModal() {
+        const modal = document.getElementById('categories-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    switchCategoriesTab(tabType) {
+        const incomeTab = document.getElementById('income-categories-tab');
+        const expenseTab = document.getElementById('expense-categories-tab');
+        const incomeContent = document.getElementById('income-categories-content');
+        const expenseContent = document.getElementById('expense-categories-content');
+
+        if (tabType === 'income') {
+            incomeTab.classList.add('border-green-500', 'text-green-600');
+            incomeTab.classList.remove('border-transparent', 'text-gray-500');
+            expenseTab.classList.add('border-transparent', 'text-gray-500');
+            expenseTab.classList.remove('border-red-500', 'text-red-600');
+            incomeContent.classList.remove('hidden');
+            expenseContent.classList.add('hidden');
+        } else {
+            expenseTab.classList.add('border-red-500', 'text-red-600');
+            expenseTab.classList.remove('border-transparent', 'text-gray-500');
+            incomeTab.classList.add('border-transparent', 'text-gray-500');
+            incomeTab.classList.remove('border-green-500', 'text-green-600');
+            expenseContent.classList.remove('hidden');
+            incomeContent.classList.add('hidden');
+        }
+    }
+
+    loadCategoriesInModal() {
+        this.loadCategoriesForType('income');
+        this.loadCategoriesForType('expense');
+        this.updateCategorySelects();
+    }
+
+    loadCategoriesForType(type) {
+        const listContainer = document.getElementById(`${type}-categories-list`);
+        if (!listContainer) return;
+
+        const allCategories = this.getAllCategories(type);
+        const defaultCategories = this.getDefaultCategories(type);
+        
+        listContainer.innerHTML = '';
+
+        allCategories.forEach(category => {
+            const isDefault = defaultCategories.some(def => def.key === category.key);
+            const categoryElement = this.createCategoryElement(category, type, isDefault);
+            listContainer.appendChild(categoryElement);
+        });
+    }
+
+    createCategoryElement(category, type, isDefault) {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between p-2 bg-gray-50 rounded border';
+        
+        const color = type === 'income' ? 'green' : 'red';
+        
+        div.innerHTML = `
+            <div class="flex items-center">
+                <span class="font-medium text-gray-900">${category.name}</span>
+                <span class="ml-2 text-xs text-gray-500">(${category.key})</span>
+                ${isDefault ? '<span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Padrão</span>' : ''}
+            </div>
+            ${!isDefault ? `<button onclick="transactionManager.removeCategoryFromModal('${type}', '${category.key}')" 
+                class="text-${color}-600 hover:text-${color}-800 text-sm">
+                <i class="fas fa-trash"></i>
+            </button>` : ''}
+        `;
+        
+        return div;
+    }
+
+    addNewCategory(type) {
+        const keyInput = document.getElementById(`new-${type}-category-key`);
+        const nameInput = document.getElementById(`new-${type}-category-name`);
+        
+        if (!keyInput || !nameInput) return;
+        
+        const key = keyInput.value.trim().toLowerCase();
+        const name = nameInput.value.trim();
+        
+        if (!key || !name) {
+            this.showErrorMessage('Por favor, preencha a chave e o nome da categoria.');
+            return;
+        }
+        
+        // Validar formato da chave (apenas letras, números e underscore)
+        if (!/^[a-z0-9_]+$/.test(key)) {
+            this.showErrorMessage('A chave deve conter apenas letras minúsculas, números e underscore.');
+            return;
+        }
+        
+        try {
+            this.addCustomCategory(type, key, name);
+            keyInput.value = '';
+            nameInput.value = '';
+            this.loadCategoriesForType(type);
+            this.updateCategorySelects();
+            this.showSuccessMessage(`Categoria "${name}" adicionada com sucesso!`);
+        } catch (error) {
+            this.showErrorMessage(error.message);
+        }
+    }
+
+    removeCategoryFromModal(type, categoryKey) {
+        if (confirm('Tem certeza que deseja remover esta categoria?')) {
+            try {
+                this.removeCustomCategory(type, categoryKey);
+                this.loadCategoriesForType(type);
+                this.updateCategorySelects();
+                this.showSuccessMessage('Categoria removida com sucesso!');
+            } catch (error) {
+                this.showErrorMessage(error.message);
+            }
+        }
+    }
+
+    updateCategorySelects() {
+        this.populateCategorySelect('income-category', 'income');
+        this.populateCategorySelect('expense-category', 'expense');
+    }
+
+    populateCategorySelect(selectId, type) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        
+        const currentValue = select.value;
+        const categories = this.getAllCategories(type);
+        
+        // Limpar opções existentes (exceto a primeira)
+        while (select.children.length > 1) {
+            select.removeChild(select.lastChild);
+        }
+        
+        // Adicionar categorias
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.key;
+            option.textContent = category.name;
+            select.appendChild(option);
+        });
+        
+        // Restaurar valor selecionado se ainda existir
+        if (currentValue && categories.some(cat => cat.key === currentValue)) {
+            select.value = currentValue;
+        }
     }
 
     formatCurrency(amount) {
