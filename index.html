@@ -102,7 +102,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <button id="add-income-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition duration-200">
                 <i class="fas fa-plus"></i>
                 <span>Adicionar Receita</span>
@@ -110,6 +110,10 @@
             <button id="add-expense-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition duration-200">
                 <i class="fas fa-minus"></i>
                 <span>Adicionar Despesa</span>
+            </button>
+            <button id="personal-data-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition duration-200">
+                <i class="fas fa-user-cog"></i>
+                <span>Dados Pessoais</span>
             </button>
         </div>
 
@@ -188,6 +192,168 @@
         </div>
     </main>
 
+    <!-- Modal de Dados Pessoais -->
+    <div id="personal-data-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-medium text-gray-900">Gerenciar Dados Pessoais</h3>
+                    <button id="close-personal-data-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex space-x-8">
+                        <button id="tab-personal" class="tab-button active py-2 px-1 border-b-2 border-indigo-500 font-medium text-sm text-indigo-600">
+                            <i class="fas fa-user mr-2"></i>Dados Pessoais
+                        </button>
+                        <button id="tab-schedule" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            <i class="fas fa-calendar mr-2"></i>Agenda
+                        </button>
+                        <button id="tab-payments" class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            <i class="fas fa-credit-card mr-2"></i>Pagamentos
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="tab-content">
+                    <!-- Dados Pessoais Tab -->
+                    <div id="personal-tab-content" class="tab-content">
+                        <form id="personal-data-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                                    <input type="text" id="full-name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                                    <input type="tel" id="phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+                                    <input type="date" id="birth-date" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+                                <textarea id="address" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                            </div>
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                                Salvar Dados Pessoais
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Agenda Tab -->
+                    <div id="schedule-tab-content" class="tab-content hidden">
+                        <div class="mb-4">
+                            <button id="add-event-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                <i class="fas fa-plus mr-2"></i>Adicionar Compromisso
+                            </button>
+                        </div>
+                        <div id="events-list" class="space-y-3">
+                            <!-- Lista de eventos será inserida aqui -->
+                        </div>
+                        
+                        <!-- Formulário de Evento (inicialmente oculto) -->
+                        <div id="event-form" class="hidden mt-4 p-4 border border-gray-200 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-900 mb-3">Novo Compromisso</h4>
+                            <form id="add-event-form" class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                                    <input type="text" id="event-title" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                                        <input type="date" id="event-date" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Horário</label>
+                                        <input type="time" id="event-time" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                                    <textarea id="event-description" rows="2" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                        Salvar
+                                    </button>
+                                    <button type="button" id="cancel-event-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Pagamentos Tab -->
+                    <div id="payments-tab-content" class="tab-content hidden">
+                        <div class="mb-4">
+                            <button id="add-payment-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                <i class="fas fa-plus mr-2"></i>Adicionar Pagamento
+                            </button>
+                        </div>
+                        <div id="payments-list" class="space-y-3">
+                            <!-- Lista de pagamentos será inserida aqui -->
+                        </div>
+                        
+                        <!-- Formulário de Pagamento (inicialmente oculto) -->
+                        <div id="payment-form" class="hidden mt-4 p-4 border border-gray-200 rounded-lg">
+                            <h4 class="text-md font-medium text-gray-900 mb-3">Novo Pagamento</h4>
+                            <form id="add-payment-form" class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                                    <input type="text" id="payment-description" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+                                        <input type="number" id="payment-amount" step="0.01" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Vencimento</label>
+                                        <input type="date" id="payment-due-date" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                                        <select id="payment-type" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="pagar">A Pagar</option>
+                                            <option value="receber">A Receber</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                                    <input type="text" id="payment-category" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Salvar
+                                    </button>
+                                    <button type="button" id="cancel-payment-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -196,5 +362,6 @@
     <!-- Scripts -->
     <script src="./js/config.js"></script>
     <script src="./js/simple-app.js"></script>
+    <script src="./js/personal-data.js"></script>
 </body>
 </html>
