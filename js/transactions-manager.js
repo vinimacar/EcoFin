@@ -856,10 +856,448 @@ class TransactionModal {
     }
 }
 
-// Inicializar quando o DOM estiver carregado
+// Funções para gerenciar Dados Pessoais
+function savePersonalData() {
+    const form = document.getElementById('personal-data-form');
+    const formData = new FormData(form);
+    
+    const personalData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        birthdate: formData.get('birthdate'),
+        address: formData.get('address'),
+        city: formData.get('city'),
+        state: formData.get('state'),
+        zipcode: formData.get('zipcode'),
+        profession: formData.get('profession'),
+        updatedAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('ecofin_personal_data', JSON.stringify(personalData));
+    alert('Dados pessoais salvos com sucesso!');
+    document.getElementById('personal-data-modal').classList.add('hidden');
+}
+
+function loadPersonalData() {
+    const stored = localStorage.getItem('ecofin_personal_data');
+    if (stored) {
+        const data = JSON.parse(stored);
+        document.getElementById('personal-name').value = data.name || '';
+        document.getElementById('personal-email').value = data.email || '';
+        document.getElementById('personal-phone').value = data.phone || '';
+        document.getElementById('personal-birthdate').value = data.birthdate || '';
+        document.getElementById('personal-address').value = data.address || '';
+        document.getElementById('personal-city').value = data.city || '';
+        document.getElementById('personal-state').value = data.state || '';
+        document.getElementById('personal-zipcode').value = data.zipcode || '';
+        document.getElementById('personal-profession').value = data.profession || '';
+    }
+}
+
+// Funções para gerenciar Agenda
+function saveAgendaEvent() {
+    const form = document.getElementById('agenda-form');
+    const formData = new FormData(form);
+    
+    const event = {
+        id: Date.now().toString(),
+        date: formData.get('date'),
+        time: formData.get('time'),
+        title: formData.get('title'),
+        description: formData.get('description'),
+        type: formData.get('type'),
+        createdAt: new Date().toISOString()
+    };
+    
+    const events = getAgendaEvents();
+    events.push(event);
+    localStorage.setItem('ecofin_agenda', JSON.stringify(events));
+    
+    alert('Evento adicionado com sucesso!');
+    form.reset();
+    loadAgendaEvents();
+}
+
+function getAgendaEvents() {
+    const stored = localStorage.getItem('ecofin_agenda');
+    return stored ? JSON.parse(stored) : [];
+}
+
+function loadAgendaEvents() {
+    const events = getAgendaEvents();
+    const eventsList = document.getElementById('agenda-events-list');
+    
+    if (events.length === 0) {
+        eventsList.innerHTML = `
+            <div class="text-center text-gray-500 py-4">
+                <i class="fas fa-calendar-alt text-3xl mb-2"></i>
+                <p>Nenhum evento agendado</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar eventos por data e hora
+    events.sort((a, b) => {
+        const dateA = new Date(a.date + ' ' + a.time);
+        const dateB = new Date(b.date + ' ' + b.time);
+        return dateA - dateB;
+    });
+    
+    eventsList.innerHTML = events.map(event => `
+        <div class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <h5 class="font-medium text-gray-900">${event.title}</h5>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <i class="fas fa-calendar mr-1"></i>${formatDate(event.date)}
+                        <i class="fas fa-clock ml-3 mr-1"></i>${event.time}
+                    </p>
+                    ${event.description ? `<p class="text-sm text-gray-500 mt-1">${event.description}</p>` : ''}
+                    <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full mt-2">
+                        ${getEventTypeLabel(event.type)}
+                    </span>
+                </div>
+                <button onclick="removeAgendaEvent('${event.id}')" class="text-red-500 hover:text-red-700 ml-2">
+                    <i class="fas fa-trash text-sm"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function removeAgendaEvent(eventId) {
+    if (confirm('Tem certeza que deseja remover este evento?')) {
+        const events = getAgendaEvents().filter(event => event.id !== eventId);
+        localStorage.setItem('ecofin_agenda', JSON.stringify(events));
+        loadAgendaEvents();
+    }
+}
+
+function getEventTypeLabel(type) {
+    const types = {
+        'reuniao': 'Reunião',
+        'compromisso': 'Compromisso',
+        'evento': 'Evento',
+        'lembrete': 'Lembrete',
+        'tarefa': 'Tarefa',
+        'outro': 'Outro'
+    };
+    return types[type] || type;
+}
+
+// Funções para gerenciar Pagamentos
+function savePayment() {
+    const form = document.getElementById('payments-form');
+    const formData = new FormData(form);
+    
+    const payment = {
+        id: Date.now().toString(),
+        amount: parseFloat(formData.get('amount')),
+        dueDate: formData.get('dueDate'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        status: formData.get('status'),
+        notes: formData.get('notes'),
+        createdAt: new Date().toISOString()
+    };
+    
+    const payments = getPayments();
+    payments.push(payment);
+    localStorage.setItem('ecofin_payments', JSON.stringify(payments));
+    
+    alert('Pagamento adicionado com sucesso!');
+    form.reset();
+    loadPayments();
+}
+
+function getPayments() {
+    const stored = localStorage.getItem('ecofin_payments');
+    return stored ? JSON.parse(stored) : [];
+}
+
+function loadPayments() {
+    const payments = getPayments();
+    const paymentsList = document.getElementById('payments-list');
+    
+    if (payments.length === 0) {
+        paymentsList.innerHTML = `
+            <div class="text-center text-gray-500 py-4">
+                <i class="fas fa-receipt text-3xl mb-2"></i>
+                <p>Nenhum pagamento cadastrado</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar pagamentos por data de vencimento
+    payments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    
+    paymentsList.innerHTML = payments.map(payment => `
+        <div class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex justify-between items-center">
+                        <h5 class="font-medium text-gray-900">${payment.description}</h5>
+                        <span class="font-bold text-lg ${payment.status === 'pago' ? 'text-green-600' : 'text-red-600'}">
+                            R$ ${payment.amount.toFixed(2)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <i class="fas fa-calendar mr-1"></i>Vencimento: ${formatDate(payment.dueDate)}
+                        <i class="fas fa-tag ml-3 mr-1"></i>${getPaymentCategoryLabel(payment.category)}
+                    </p>
+                    ${payment.notes ? `<p class="text-sm text-gray-500 mt-1">${payment.notes}</p>` : ''}
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                            payment.status === 'pago' ? 'bg-green-100 text-green-800' :
+                            payment.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
+                            payment.status === 'atrasado' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                        }">
+                            ${getPaymentStatusLabel(payment.status)}
+                        </span>
+                        <div class="flex space-x-2">
+                            ${payment.status !== 'pago' ? `<button onclick="markAsPaid('${payment.id}')" class="text-green-500 hover:text-green-700 text-sm">
+                                <i class="fas fa-check"></i> Marcar como Pago
+                            </button>` : ''}
+                            <button onclick="removePayment('${payment.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function markAsPaid(paymentId) {
+    const payments = getPayments();
+    const payment = payments.find(p => p.id === paymentId);
+    if (payment) {
+        payment.status = 'pago';
+        payment.paidAt = new Date().toISOString();
+        localStorage.setItem('ecofin_payments', JSON.stringify(payments));
+        loadPayments();
+    }
+}
+
+function removePayment(paymentId) {
+    if (confirm('Tem certeza que deseja remover este pagamento?')) {
+        const payments = getPayments().filter(payment => payment.id !== paymentId);
+        localStorage.setItem('ecofin_payments', JSON.stringify(payments));
+        loadPayments();
+    }
+}
+
+function filterPayments(status) {
+    const payments = getPayments();
+    let filteredPayments = payments;
+    
+    if (status !== 'all') {
+        filteredPayments = payments.filter(payment => payment.status === status);
+    }
+    
+    const paymentsList = document.getElementById('payments-list');
+    
+    if (filteredPayments.length === 0) {
+        paymentsList.innerHTML = `
+            <div class="text-center text-gray-500 py-4">
+                <i class="fas fa-receipt text-3xl mb-2"></i>
+                <p>Nenhum pagamento encontrado</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Ordenar pagamentos por data de vencimento
+    filteredPayments.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    
+    paymentsList.innerHTML = filteredPayments.map(payment => `
+        <div class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex justify-between items-center">
+                        <h5 class="font-medium text-gray-900">${payment.description}</h5>
+                        <span class="font-bold text-lg ${payment.status === 'pago' ? 'text-green-600' : 'text-red-600'}">
+                            R$ ${payment.amount.toFixed(2)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <i class="fas fa-calendar mr-1"></i>Vencimento: ${formatDate(payment.dueDate)}
+                        <i class="fas fa-tag ml-3 mr-1"></i>${getPaymentCategoryLabel(payment.category)}
+                    </p>
+                    ${payment.notes ? `<p class="text-sm text-gray-500 mt-1">${payment.notes}</p>` : ''}
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                            payment.status === 'pago' ? 'bg-green-100 text-green-800' :
+                            payment.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
+                            payment.status === 'atrasado' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                        }">
+                            ${getPaymentStatusLabel(payment.status)}
+                        </span>
+                        <div class="flex space-x-2">
+                            ${payment.status !== 'pago' ? `<button onclick="markAsPaid('${payment.id}')" class="text-green-500 hover:text-green-700 text-sm">
+                                <i class="fas fa-check"></i> Marcar como Pago
+                            </button>` : ''}
+                            <button onclick="removePayment('${payment.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getPaymentCategoryLabel(category) {
+    const categories = {
+        'moradia': 'Moradia',
+        'alimentacao': 'Alimentação',
+        'transporte': 'Transporte',
+        'saude': 'Saúde',
+        'educacao': 'Educação',
+        'lazer': 'Lazer',
+        'servicos': 'Serviços',
+        'outros': 'Outros'
+    };
+    return categories[category] || category;
+}
+
+function getPaymentStatusLabel(status) {
+    const statuses = {
+        'pendente': 'Pendente',
+        'pago': 'Pago',
+        'atrasado': 'Atrasado',
+        'cancelado': 'Cancelado'
+    };
+    return statuses[status] || status;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
+}
+
+// Instância global
 let transactionModal;
 document.addEventListener('DOMContentLoaded', () => {
     transactionModal = new TransactionModal();
+    
+    // Event listeners para Dados Pessoais
+    const personalDataModal = document.getElementById('personal-data-modal');
+    const personalDataForm = document.getElementById('personal-data-form');
+    const closePersonalDataModal = document.getElementById('close-personal-data-modal');
+    const cancelPersonalData = document.getElementById('cancel-personal-data');
+    
+    if (closePersonalDataModal) {
+        closePersonalDataModal.addEventListener('click', () => {
+            personalDataModal.classList.add('hidden');
+        });
+    }
+    
+    if (cancelPersonalData) {
+        cancelPersonalData.addEventListener('click', () => {
+            personalDataModal.classList.add('hidden');
+        });
+    }
+    
+    if (personalDataForm) {
+        personalDataForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            savePersonalData();
+        });
+    }
+    
+    // Event listeners para Agenda
+    const agendaModal = document.getElementById('agenda-modal');
+    const agendaForm = document.getElementById('agenda-form');
+    const closeAgendaModal = document.getElementById('close-agenda-modal');
+    const closeAgenda = document.getElementById('close-agenda');
+    const clearAgendaForm = document.getElementById('clear-agenda-form');
+    
+    if (closeAgendaModal) {
+        closeAgendaModal.addEventListener('click', () => {
+            agendaModal.classList.add('hidden');
+        });
+    }
+    
+    if (closeAgenda) {
+        closeAgenda.addEventListener('click', () => {
+            agendaModal.classList.add('hidden');
+        });
+    }
+    
+    if (clearAgendaForm) {
+        clearAgendaForm.addEventListener('click', () => {
+            agendaForm.reset();
+        });
+    }
+    
+    if (agendaForm) {
+        agendaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveAgendaEvent();
+        });
+    }
+    
+    // Event listeners para Pagamentos
+    const paymentsModal = document.getElementById('payments-modal');
+    const paymentsForm = document.getElementById('payments-form');
+    const closePaymentsModal = document.getElementById('close-payments-modal');
+    const closePayments = document.getElementById('close-payments');
+    const clearPaymentsForm = document.getElementById('clear-payments-form');
+    
+    if (closePaymentsModal) {
+        closePaymentsModal.addEventListener('click', () => {
+            paymentsModal.classList.add('hidden');
+        });
+    }
+    
+    if (closePayments) {
+        closePayments.addEventListener('click', () => {
+            paymentsModal.classList.add('hidden');
+        });
+    }
+    
+    if (clearPaymentsForm) {
+        clearPaymentsForm.addEventListener('click', () => {
+            paymentsForm.reset();
+        });
+    }
+    
+    if (paymentsForm) {
+        paymentsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            savePayment();
+        });
+    }
+    
+    // Filtros de pagamentos
+    const filterPending = document.getElementById('filter-pending');
+    const filterPaid = document.getElementById('filter-paid');
+    const filterAll = document.getElementById('filter-all');
+    
+    if (filterPending) {
+        filterPending.addEventListener('click', () => filterPayments('pendente'));
+    }
+    
+    if (filterPaid) {
+        filterPaid.addEventListener('click', () => filterPayments('pago'));
+    }
+    
+    if (filterAll) {
+        filterAll.addEventListener('click', () => filterPayments('all'));
+    }
+    
+    // Carregar dados ao inicializar
+    loadPersonalData();
+    loadAgendaEvents();
+    loadPayments();
 });
 
 // Expor classes globalmente
