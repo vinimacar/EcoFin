@@ -3,7 +3,7 @@ class CurrencyManager {
     constructor() {
         this.rates = {};
         this.baseCurrency = 'BRL';
-        this.supportedCurrencies = ['USD', 'EUR', 'BRL', 'BTC'];
+        this.supportedCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'BRL', 'BTC'];
         this.lastUpdate = null;
         this.updateInterval = 5 * 60 * 1000; // 5 minutes
         this.apiEndpoints = {
@@ -80,7 +80,7 @@ class CurrencyManager {
 
     async fetchTraditionalRates() {
         try {
-            // Try primary API first
+            // Try primary API first with BRL as base
             const response = await fetch(`${this.apiEndpoints.primary}${this.baseCurrency}`);
             
             if (!response.ok) {
@@ -89,9 +89,15 @@ class CurrencyManager {
             
             const data = await response.json();
             
+            // Since BRL is base, other currencies show how much 1 BRL is worth
             return {
-                USD: data.rates.USD || 1,
-                EUR: data.rates.EUR || 1,
+                USD: data.rates.USD || 0.20,
+                EUR: data.rates.EUR || 0.18,
+                GBP: data.rates.GBP || 0.16,
+                JPY: data.rates.JPY || 30.0,
+                CAD: data.rates.CAD || 0.27,
+                AUD: data.rates.AUD || 0.30,
+                CHF: data.rates.CHF || 0.18,
                 BRL: 1 // Base currency
             };
             
@@ -103,8 +109,8 @@ class CurrencyManager {
 
     async fetchFallbackRates() {
         try {
-            // Fallback to manual rates (could be from another API)
-            const response = await fetch('https://api.exchangerate.host/latest?base=BRL&symbols=USD,EUR');
+            // Fallback to exchangerate.host API with BRL as base
+            const response = await fetch('https://api.exchangerate.host/latest?base=BRL&symbols=USD,EUR,GBP,JPY,CAD,AUD,CHF');
             
             if (!response.ok) {
                 throw new Error('Fallback API failed');
@@ -115,16 +121,26 @@ class CurrencyManager {
             return {
                 USD: data.rates.USD || 0.20,
                 EUR: data.rates.EUR || 0.18,
+                GBP: data.rates.GBP || 0.16,
+                JPY: data.rates.JPY || 30.0,
+                CAD: data.rates.CAD || 0.27,
+                AUD: data.rates.AUD || 0.30,
+                CHF: data.rates.CHF || 0.18,
                 BRL: 1
             };
             
         } catch (error) {
             console.warn('Fallback API failed, using default rates:', error);
             
-            // Return default rates as last resort
+            // Return default rates as last resort (approximate values)
             return {
-                USD: 0.20, // 1 BRL = 0.20 USD (approximate)
-                EUR: 0.18, // 1 BRL = 0.18 EUR (approximate)
+                USD: 0.20, // 1 BRL ≈ 0.20 USD
+                EUR: 0.18, // 1 BRL ≈ 0.18 EUR
+                GBP: 0.16, // 1 BRL ≈ 0.16 GBP
+                JPY: 30.0, // 1 BRL ≈ 30 JPY
+                CAD: 0.27, // 1 BRL ≈ 0.27 CAD
+                AUD: 0.30, // 1 BRL ≈ 0.30 AUD
+                CHF: 0.18, // 1 BRL ≈ 0.18 CHF
                 BRL: 1
             };
         }
@@ -211,53 +227,38 @@ class CurrencyManager {
 
     updateCurrencyWidget() {
         const ratesContainer = document.getElementById('currency-rates');
-        const lastUpdateElement = document.getElementById('last-update');
-        
         if (!ratesContainer) return;
         
-        // Update rates display
-        ratesContainer.innerHTML = this.supportedCurrencies.map(currency => {
-            if (currency === this.baseCurrency) return '';
-            
-            const rate = this.rates[currency];
-            const trend = this.getRateTrend(currency);
-            const trendIcon = trend > 0 ? 'fa-arrow-up text-green-500' : 
-                            trend < 0 ? 'fa-arrow-down text-red-500' : 
-                            'fa-minus text-gray-400';
-            
-            return `
-                <div class="flex items-center justify-between py-1">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-sm font-medium text-gray-900 dark:text-white">
-                            ${this.getCurrencySymbol(currency)}
-                        </span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                            ${currency}
-                        </span>
-                    </div>
-                    <div class="flex items-center space-x-1">
-                        <span class="text-sm font-mono text-gray-900 dark:text-white">
-                            ${this.formatRate(rate, currency)}
-                        </span>
-                        <i class="fas ${trendIcon} text-xs"></i>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        
-        // Update last update time
-        if (lastUpdateElement && this.lastUpdate) {
-            lastUpdateElement.textContent = `Atualizado: ${this.lastUpdate.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            })}`;
+        // Atualizar timestamp
+        const timestampElement = document.getElementById('currency-last-update');
+        if (timestampElement) {
+            timestampElement.textContent = new Date().toLocaleString('pt-BR');
         }
+        
+        // Limpar container
+        ratesContainer.innerHTML = '';
+        
+        // Ordem de exibição das moedas
+        const displayOrder = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'BTC'];
+        
+        // Criar cards para cada moeda
+        displayOrder.forEach(currency => {
+            if (currency !== this.baseCurrency && this.rates[currency]) {
+                const card = this.createCurrencyCard(currency, this.rates[currency]);
+                ratesContainer.appendChild(card);
+            }
+        });
     }
 
     getCurrencySymbol(currency) {
         const symbols = {
             USD: '$',
             EUR: '€',
+            GBP: '£',
+            JPY: '¥',
+            CAD: 'C$',
+            AUD: 'A$',
+            CHF: 'CHF',
             BRL: 'R$',
             BTC: '₿'
         };
@@ -270,6 +271,10 @@ class CurrencyManager {
         
         if (currency === 'BTC') {
             return rate.toFixed(8);
+        }
+        
+        if (currency === 'JPY') {
+            return rate.toFixed(2); // Yen typically doesn't use decimals, but showing 2 for precision
         }
         
         return rate.toFixed(4);
@@ -349,6 +354,28 @@ class CurrencyManager {
         }
         
         localStorage.setItem('currency-widget-minimized', 'false');
+    }
+
+    createCurrencyCard(currency, rate) {
+        const card = document.createElement('div');
+        card.className = 'text-center p-3 bg-white rounded-lg border hover:shadow-md transition-shadow';
+        
+        const symbol = this.getCurrencySymbol(currency);
+        const formattedRate = this.formatRate(rate, currency);
+        
+        // Cores diferentes para diferentes tipos de moeda
+        let currencyColor = 'text-blue-600';
+        if (currency === 'BTC') currencyColor = 'text-orange-500';
+        else if (['EUR', 'GBP'].includes(currency)) currencyColor = 'text-purple-600';
+        else if (['JPY', 'CAD', 'AUD', 'CHF'].includes(currency)) currencyColor = 'text-green-600';
+        
+        card.innerHTML = `
+            <div class="text-lg font-bold ${currencyColor}">${currency}</div>
+            <div class="text-sm font-semibold text-gray-800">${symbol} ${formattedRate}</div>
+            <div class="text-xs text-gray-500">por R$ 1</div>
+        `;
+        
+        return card;
     }
 
     // Currency conversion methods
