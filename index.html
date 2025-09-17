@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFin - Gestão Financeira Inteligente</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#4F46E5">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EcoFin">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-indigo-600">EcoFin</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="notifications-btn" class="text-gray-500 hover:text-gray-700 relative">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img src="./images/user-avatar.svg" alt="Avatar" class="h-8 w-8 rounded-full">
+                        <span id="user-name" class="text-sm font-medium text-gray-700">Usuário Demo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Dashboard Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Saldo Atual -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Saldo Atual</dt>
+                                <dd id="current-balance" class="text-lg font-medium text-gray-900">R$ 0,00</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total de Receitas -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-arrow-up text-green-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Receitas</dt>
+                                <dd id="total-income" class="text-lg font-medium text-green-600">R$ 0,00</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total de Despesas -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-arrow-down text-red-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Despesas</dt>
+                                <dd id="total-expenses" class="text-lg font-medium text-red-600">R$ 0,00</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <button id="add-income-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition duration-200">
+                <i class="fas fa-plus"></i>
+                <span>Adicionar Receita</span>
+            </button>
+            <button id="add-expense-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition duration-200">
+                <i class="fas fa-minus"></i>
+                <span>Adicionar Despesa</span>
+            </button>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Transações Recentes</h3>
+                <div id="recent-transactions" class="space-y-3">
+                    <!-- Transações serão inseridas aqui dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráfico de Receitas vs Despesas -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Receitas vs Despesas</h3>
+                <div class="h-64 flex items-center justify-center bg-gray-50 rounded">
+                    <img src="./images/placeholder-chart.svg" alt="Gráfico" class="h-32 w-32 opacity-50">
+                </div>
+            </div>
+
+            <!-- Gráfico de Categorias -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Gastos por Categoria</h3>
+                <div class="h-64 flex items-center justify-center bg-gray-50 rounded">
+                    <img src="./images/placeholder-chart.svg" alt="Gráfico" class="h-32 w-32 opacity-50">
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Section -->
+        <div class="mt-8 bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <i class="fas fa-robot text-indigo-600 mr-2"></i>
+                    Assistente Financeiro IA
+                </h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-gray-600 mb-4">Olá! Sou seu assistente financeiro inteligente. Como posso ajudá-lo hoje?</p>
+                    <div class="flex space-x-2">
+                        <input type="text" id="ai-input" placeholder="Digite sua pergunta..." 
+                               class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button id="ai-send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currency Exchange -->
+        <div class="mt-8 bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <i class="fas fa-exchange-alt text-green-600 mr-2"></i>
+                    Cotações de Moedas
+                </h3>
+                <div id="currency-rates" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Cotações serão inseridas aqui dinamicamente -->
+                    <div class="text-center p-4 bg-gray-50 rounded">
+                        <div class="text-2xl font-bold text-gray-400">USD</div>
+                        <div class="text-sm text-gray-500">Carregando...</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded">
+                        <div class="text-2xl font-bold text-gray-400">EUR</div>
+                        <div class="text-sm text-gray-500">Carregando...</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded">
+                        <div class="text-2xl font-bold text-gray-400">BTC</div>
+                        <div class="text-sm text-gray-500">Carregando...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Scripts -->
+    <script src="./js/config.js"></script>
+    <script src="./js/simple-app.js"></script>
+</body>
+</html>

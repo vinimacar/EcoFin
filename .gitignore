@@ -1,0 +1,332 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
+# Vercel
+.vercel
+.now
+
+# Build outputs
+build/
+dist/
+out/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local development
+.local
+
+# Testing
+/coverage
+
+# Production
+/build
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase config (keep template, ignore actual config)
+# js/config.js
+
+# API keys (if stored in separate files)
+api-keys.js
+secrets.js
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Documentation build
+docs/_build/
+
+# Lighthouse reports
+lighthouse-report.html
+
+# PWA asset generator output
+pwa-assets/
+
+# Service worker cache
+sw-cache/
+
+# Analytics and tracking
+analytics/
+tracking/
+
+# User uploads (if any)
+uploads/
+user-data/
+
+# Database dumps
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.cert
+
+# Local configuration
+local.config.js
+local.settings.json
+
+# Temporary files
+*.tmp
+*.temp
+
+# Lock files
+*.lock
+
+# Generated files
+generated/
+auto-generated/
+
+# Minified files (if generated)
+*.min.js
+*.min.css
+
+# Source maps (if generated)
+*.map
+
+# Webpack
+.webpack/
+
+# Rollup
+.rollup.cache/
+
+# Parcel
+.parcel-cache/
+
+# Storybook
+.out
+.storybook-out
+
+# Temporary testing files
+test-results/
+test-reports/
+
+# Performance monitoring
+performance/
+metrics/
+
+# Error logs
+error.log
+errors/
+
+# Debug files
+debug/
+*.debug
+
+# Profiling
+profile/
+*.prof
+
+# Memory dumps
+*.heapsnapshot
+
+# Chrome extension
+*.crx
+*.pem
+
+# Electron
+dist_electron/
+
+# Capacitor
+android/
+ios/
+
+# Cordova
+platforms/
+plugins/
+www/
+
+# React Native
+.expo/
+.expo-shared/
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Dart
+.dart_tool/
+.packages
+build/
+
+# Python (if using any Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# Ruby (if using any Ruby tools)
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Java (if using any Java tools)
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# Gradle
+.gradle
+build/
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# End of file

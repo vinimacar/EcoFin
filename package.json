@@ -1,0 +1,106 @@
+{
+  "name": "ecofin",
+  "version": "1.0.0",
+  "description": "Aplicação web moderna e responsiva para gestão de orçamento pessoal com IA, cotações em tempo real e análises inteligentes",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000 -c-1",
+    "dev": "npx http-server -p 3000 -c-1 -o",
+    "build": "echo 'Build completed - Static files ready for deployment'",
+    "deploy": "vercel --prod",
+    "preview": "vercel",
+    "lint": "echo 'Linting JavaScript files...' && npx eslint js/*.js",
+    "format": "echo 'Formatting code...' && npx prettier --write .",
+    "test": "echo 'Running tests...' && npx jest",
+    "validate": "echo 'Validating HTML...' && npx html-validate index.html",
+    "lighthouse": "npx lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "pwa-audit": "npx pwa-asset-generator --manifest manifest.json --index index.html",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install"
+  },
+  "keywords": [
+    "finance",
+    "budget",
+    "personal-finance",
+    "pwa",
+    "firebase",
+    "javascript",
+    "twind",
+    "chart.js",
+    "ai-assistant",
+    "cryptocurrency",
+    "currency-exchange",
+    "responsive-design",
+    "offline-first",
+    "vercel"
+  ],
+  "author": {
+    "name": "Seu Nome",
+    "email": "seu.email@exemplo.com",
+    "url": "https://github.com/seu-usuario"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seu-usuario/ecofin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seu-usuario/ecofin/issues"
+  },
+  "homepage": "https://ecofin.vercel.app",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "devDependencies": {
+    "@vercel/node": "^3.0.0",
+    "eslint": "^8.0.0",
+    "html-validate": "^8.0.0",
+    "http-server": "^14.0.0",
+    "jest": "^29.0.0",
+    "lighthouse": "^11.0.0",
+    "prettier": "^3.0.0",
+    "pwa-asset-generator": "^6.0.0"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "firebase": "^10.0.0"
+  },
+  "files": [
+    "index.html",
+    "manifest.json",
+    "sw.js",
+    "js/",
+    "assets/",
+    "README.md"
+  ],
+  "config": {
+    "port": 3000,
+    "host": "localhost"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/seu-usuario"
+  },
+  "contributors": [
+    {
+      "name": "Seu Nome",
+      "email": "seu.email@exemplo.com",
+      "url": "https://github.com/seu-usuario"
+    }
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "volta": {
+    "node": "18.17.0",
+    "npm": "9.6.7"
+  }
+}
