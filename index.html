@@ -102,7 +102,7 @@
         </div>
 
         <!-- Botões de Ação -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             <button id="add-income-btn" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
                 <i class="fas fa-plus"></i>
                 <span>Nova Receita</span>
@@ -111,13 +111,17 @@
                 <i class="fas fa-minus"></i>
                 <span>Nova Despesa</span>
             </button>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
-                <i class="fas fa-chart-line"></i>
-                <span>Relatórios</span>
-            </button>
-            <button id="personal-data-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
+            <button id="personal-data-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2" onclick="document.getElementById('personal-data-modal').classList.remove('hidden'); loadPersonalData();">
                 <i class="fas fa-user"></i>
                 <span>Dados Pessoais</span>
+            </button>
+            <button id="agenda-btn" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2" onclick="document.getElementById('agenda-modal').classList.remove('hidden'); loadAgendaEvents();">
+                <i class="fas fa-calendar"></i>
+                <span>Agenda</span>
+            </button>
+            <button id="payments-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2" onclick="document.getElementById('payments-modal').classList.remove('hidden'); loadPayments();">
+                <i class="fas fa-credit-card"></i>
+                <span>Pagamentos</span>
             </button>
         </div>
 
@@ -595,6 +599,298 @@
                 
                 <div class="flex justify-end pt-4 mt-6 border-t">
                     <button id="close-categories-modal-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Dados Pessoais -->
+    <div id="personal-data-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-user text-purple-600 mr-2"></i>
+                        Dados Pessoais
+                    </h3>
+                    <button id="close-personal-data-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <form id="personal-data-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo *</label>
+                            <input type="text" id="personal-name" name="name" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                            <input type="email" id="personal-email" name="email" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            <input type="tel" id="personal-phone" name="phone" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+                            <input type="date" id="personal-birthdate" name="birthdate" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+                        <input type="text" id="personal-address" name="address" placeholder="Rua, número, bairro" 
+                               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                            <input type="text" id="personal-city" name="city" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                            <input type="text" id="personal-state" name="state" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                            <input type="text" id="personal-zipcode" name="zipcode" placeholder="00000-000" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Profissão</label>
+                        <input type="text" id="personal-profession" name="profession" 
+                               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-save mr-2"></i>Salvar Dados
+                        </button>
+                        <button type="button" id="cancel-personal-data" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Agenda -->
+    <div id="agenda-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-calendar text-blue-600 mr-2"></i>
+                        Gerenciar Agenda
+                    </h3>
+                    <button id="close-agenda-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Formulário para adicionar evento -->
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">Adicionar Novo Evento</h4>
+                    <form id="agenda-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Data *</label>
+                                <input type="date" id="agenda-date" name="date" 
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Horário *</label>
+                                <input type="time" id="agenda-time" name="time" 
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                            <input type="text" id="agenda-title" name="title" placeholder="Ex: Reunião com cliente" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                            <textarea id="agenda-description" name="description" rows="3" placeholder="Detalhes do evento..." 
+                                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Evento *</label>
+                            <select id="agenda-type" name="type" 
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="reuniao">Reunião</option>
+                                <option value="compromisso">Compromisso</option>
+                                <option value="evento">Evento</option>
+                                <option value="lembrete">Lembrete</option>
+                                <option value="tarefa">Tarefa</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                <i class="fas fa-plus mr-2"></i>Adicionar Evento
+                            </button>
+                            <button type="button" id="clear-agenda-form" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                Limpar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Lista de eventos -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4">Próximos Eventos</h4>
+                    <div id="agenda-events-list" class="space-y-3 max-h-64 overflow-y-auto">
+                        <!-- Eventos serão inseridos aqui dinamicamente -->
+                        <div class="text-center text-gray-500 py-4">
+                            <i class="fas fa-calendar-alt text-3xl mb-2"></i>
+                            <p>Nenhum evento agendado</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-4">
+                    <button id="close-agenda" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamentos -->
+    <div id="payments-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        <i class="fas fa-credit-card text-green-600 mr-2"></i>
+                        Gerenciar Pagamentos
+                    </h3>
+                    <button id="close-payments-modal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Formulário para adicionar pagamento -->
+                <div class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">Adicionar Novo Pagamento</h4>
+                    <form id="payments-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Valor *</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-gray-500">R$</span>
+                                    <input type="number" id="payment-amount" name="amount" step="0.01" min="0" placeholder="0,00" 
+                                           class="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Data de Vencimento *</label>
+                                <input type="date" id="payment-due-date" name="dueDate" 
+                                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
+                            <input type="text" id="payment-description" name="description" placeholder="Ex: Conta de luz, Aluguel, Cartão de crédito" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
+                                <select id="payment-category" name="category" 
+                                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                    <option value="">Selecione a categoria</option>
+                                    <option value="moradia">Moradia</option>
+                                    <option value="alimentacao">Alimentação</option>
+                                    <option value="transporte">Transporte</option>
+                                    <option value="saude">Saúde</option>
+                                    <option value="educacao">Educação</option>
+                                    <option value="lazer">Lazer</option>
+                                    <option value="servicos">Serviços</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+                                <select id="payment-status" name="status" 
+                                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                    <option value="pendente">Pendente</option>
+                                    <option value="pago">Pago</option>
+                                    <option value="atrasado">Atrasado</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                            <textarea id="payment-notes" name="notes" rows="2" placeholder="Informações adicionais..." 
+                                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                <i class="fas fa-plus mr-2"></i>Adicionar Pagamento
+                            </button>
+                            <button type="button" id="clear-payments-form" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                Limpar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Lista de pagamentos -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-md font-medium text-gray-900">Pagamentos</h4>
+                        <div class="flex space-x-2">
+                            <button id="filter-pending" class="px-3 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200">
+                                Pendentes
+                            </button>
+                            <button id="filter-paid" class="px-3 py-1 text-xs bg-green-100 text-green-800 rounded-full hover:bg-green-200">
+                                Pagos
+                            </button>
+                            <button id="filter-all" class="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded-full hover:bg-gray-200">
+                                Todos
+                            </button>
+                        </div>
+                    </div>
+                    <div id="payments-list" class="space-y-3 max-h-64 overflow-y-auto">
+                        <!-- Pagamentos serão inseridos aqui dinamicamente -->
+                        <div class="text-center text-gray-500 py-4">
+                            <i class="fas fa-receipt text-3xl mb-2"></i>
+                            <p>Nenhum pagamento cadastrado</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-4">
+                    <button id="close-payments" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
                         Fechar
                     </button>
                 </div>
