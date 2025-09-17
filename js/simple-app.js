@@ -3,45 +3,20 @@
  * Versão demo funcional sem Firebase
  */
 
-// Dados demo
-const demoData = {
+// Dados iniciais vazios
+const initialData = {
     user: {
-        uid: 'demo-user',
-        email: 'demo@ecofin.com',
-        displayName: 'Usuário Demo'
+        uid: 'local-user',
+        email: 'usuario@local.com',
+        displayName: 'Usuário Local'
     },
-    transactions: [
-        {
-            id: 'demo-1',
-            type: 'income',
-            amount: 5000,
-            category: 'Salário',
-            description: 'Salário mensal',
-            date: '2024-01-01'
-        },
-        {
-            id: 'demo-2',
-            type: 'expense',
-            amount: 800,
-            category: 'Alimentação',
-            description: 'Supermercado',
-            date: '2024-01-05'
-        },
-        {
-            id: 'demo-3',
-            type: 'expense',
-            amount: 1200,
-            category: 'Moradia',
-            description: 'Aluguel',
-            date: '2024-01-10'
-        }
-    ]
+    transactions: []
 };
 
 // Gerenciador de transações simplificado
 class SimpleTransactionManager {
     constructor() {
-        this.transactions = [...demoData.transactions];
+        this.transactions = [...initialData.transactions];
         this.listeners = [];
     }
     
@@ -168,34 +143,26 @@ class SimpleApp {
         
         if (addIncomeBtn) {
             addIncomeBtn.addEventListener('click', () => {
-                this.showAddTransactionDemo('income');
+                this.showAddTransactionForm('income');
             });
         }
         
         if (addExpenseBtn) {
             addExpenseBtn.addEventListener('click', () => {
-                this.showAddTransactionDemo('expense');
+                this.showAddTransactionForm('expense');
             });
         }
     }
     
-    showAddTransactionDemo(type) {
-        // Simular adição de transação demo
-        const demoTransaction = {
-            type: type,
-            amount: Math.floor(Math.random() * 1000) + 100,
-            category: type === 'income' ? 'Freelance' : 'Compras',
-            description: type === 'income' ? 'Trabalho freelance' : 'Compras diversas'
-        };
-        
-        this.transactionManager.addTransaction(demoTransaction);
-        
-        // Simular notificação
-        console.log(`${type === 'income' ? 'Receita' : 'Despesa'} adicionada com sucesso!`);
+    showAddTransactionForm(type) {
+        // Placeholder para formulário de transação
+        const transactionType = type === 'income' ? 'Receita' : 'Despesa';
+        alert(`Formulário de ${transactionType} será implementado em breve!`);
+        console.log(`Clicou em adicionar ${transactionType.toLowerCase()}`);
     }
     
     showWelcomeMessage() {
-        console.log('Bem-vindo ao EcoFin! Aplicação carregada em modo demo.');
+        console.log('Bem-vindo ao EcoFin! Aplicação carregada com sucesso.');
     }
 }
 
